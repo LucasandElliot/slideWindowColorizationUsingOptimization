@@ -58,10 +58,10 @@ for photo_name in photo_name_list:
     # 调整权重
     alpha = 1 / 100
     # src = - alpha * soble_image + src
-    src = - alpha * abs(laplacian_image) + src
+    # src = - alpha * abs(laplacian_image) + src
     # src = alpha * canny + src
     # src = alpha * dctImg + src
-    # src = dctImg
+    src = dctImg
     # src = alpha * waveletImg + src
     # src = alpha * improve_edges_img + src
 

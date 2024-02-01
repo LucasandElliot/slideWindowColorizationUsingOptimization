@@ -4,8 +4,11 @@
 # @Author : Lucas
 # @File : colorzationOptimization.py
 # 窗口半径为1，效果最好
+import argparse
+import os
 import time
 
+import cv2
 import numpy as np
 import cv2 as cv
 import colorsys
@@ -13,18 +16,50 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import scipy.sparse as sparse
 from scipy.sparse.linalg import spsolve
-photo_name_list = ['waterfall', 'cats', 'gili', 'hair', 'monaco', 'example', 'example2']
-# photo_name_list = ['example2']
-solve_name_list = ['spsolve', 'gmres', 'lsmr', 'lgrmes']
-spend_time_list = []
-for photo_name in photo_name_list:
-    photo_file_suffix = 'bmp'
-    src = cv.imread('./data/{}.{}'.format(photo_name, photo_file_suffix))  # cv读取的是BGR格式
-    solve_name = 'spsolve'
-    src = src[:, :, ::-1]  # 第一通道和第三通道互换，实现BGR到RGB转换
+
+
+parser = argparse.ArgumentParser(description='运用侧窗彩色化图像处理')
+# type是要传入的参数的数据类型  help是该参数的提示信息
+parser.add_argument('--padding', type=int, help='padding，为侧窗的窗口代销', default=2)
+parser.add_argument('--gary_photo_file', type=str, help='文件名这里放置图片名字', default='example.png')
+parser.add_argument('--marked_photo_file', type=str, help='文件名这里放置图片名字', default='example_marked.png')
+parser.add_argument('--gray_data_dir', type=str, help='这里是存放灰色图像的文件夹', default='./data/original')
+parser.add_argument('--marked_data_dir', type=str, help='这里是存放灰色图像的文件夹', default='./data/marked')
+parser.add_argument('--is_file', dest='is_file', action='store_true', help='这里选择是否文件或者是文件夹', default=False)
+parser.add_argument('--exp_dir', type=str, help='这里是存放灰色图像的文件夹', default='./exp')
+parser.add_argument('--is_reshape', dest='is_reshape', action='store_true', help='这里是放置图像处理的形状', default=False)
+parser.add_argument('--is_store', dest='is_store', action='store_true', help='是否选择保存图片', default=False)
+args = parser.parse_args()
+
+padding = 2  # 窗口半径、图片填充大小
+# src放置的是灰度图,marked是放置已经标记成果的图片
+gray_data_dir = args.gray_data_dir
+marked_data_dir = args.marked_data_dir
+gray_photo_name_list = [os.path.join(gray_data_dir, i) for i in os.listdir(gray_data_dir)]
+gray_photo_name_list.sort()
+marked_photo_name_list = [os.path.join(marked_data_dir, i) for i in os.listdir(marked_data_dir)]
+marked_photo_name_list.sort()
+is_reshape = args.is_reshape
+is_store = args.is_store
+is_file = args.is_file
+
+exp_dir = args.exp_dir
+shape = (256, 256)
+if is_file is True:
+    gray_photo_name_list = [args.gary_photo_file]
+    marked_photo_name_list = [args.marked_photo_file]
+
+for index in range(len(gray_photo_name_list)):
+    # cv读取的是BGR格式
+    src = cv.imread(gray_photo_name_list[index])
+    marked = cv.imread(marked_photo_name_list[index])
+
+    if is_reshape is True:
+        src = cv2.resize(src, shape)
+        marked = cv2.resize(marked, shape)
+    # 第一通道和第三通道互换，实现BGR到RGB转换
+    src = src[:, :, ::-1]
     _src = src.astype(float) / 255
-    marked = cv.imread('./data/{}_marked.{}'.format(photo_name, photo_file_suffix))
-    model_name = "colorization_using_optimization_{}_{}结果.jpg".format(photo_name, solve_name)
     marked = marked[:, :, ::-1]
     _marked = marked.astype(float) / 255
     Y, _, _ = colorsys.rgb_to_yiq(_src[:, :, 0], _src[:, :, 1], _src[:, :, 2])  # Y通道是原灰度图的
@@ -86,8 +121,6 @@ for photo_name in photo_name_list:
 
 
     # 遍历所有像素
-    # 遍历所有像素
-    start_time = time.time()
     for c in range(cols):
         for r in range(rows):
             # 1. 将该像素的位置和其强度存在center里面，并计算索引
@@ -119,7 +152,6 @@ for photo_name in photo_name_list:
 
     ansU = sparse.linalg.spsolve(matA, b_u)
     ansV = sparse.linalg.spsolve(matA, b_v)
-    spend_time_list.append(time.time() - start_time)
 
 
     def yuv_to_rgb(cY, cU, cV):
@@ -137,7 +169,7 @@ for photo_name in photo_name_list:
 
     plt.imshow(ans1)
     plt.title("Colorized_without_sidewindow")
+    if is_store is True:
+        store_filename = os.path.join(exp_dir, gray_photo_name_list[index].replace('/', '|').replace('\\', '|').split('|')[-1])
+        plt.imsave(store_filename, ans1)
     plt.show()
-    plt.imsave("./exp/{}".format(model_name), ans1)
-data = pd.DataFrame(spend_time_list, columns=['花费时间'])
-data.to_excel('./exp/{}.xlsx'.format(model_name), index=False)

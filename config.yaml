@@ -1,7 +1,0 @@
-padding: 2
-photo_name_list:
-  - 'example1'
-  - 'exampl2'
-gray_data_dir: './data/original'
-marked_data_dir: './data/marked'
-exp_dir: './exp'
