@@ -1,7 +1,7 @@
 # 介绍
 
 - 主要是运用以下两篇论文《slide window flitering》和《colorization using optimization》，对于上述代码，实现运用的是Python方法以及使用Laplace算子进行优化，实验对比结果确实有一定提升效果。所以最后采取的是Laplace算子优化。
-- colorzationOptimization.py为复现colorization using optimization的原论文
+- colorzationOptimization.py为复现colorization using optimization的原论文，主要是借助上述论文的理论，在YUV空间求解线性方程组
 - slideWindowColorization.py为复现侧窗滤波+Laplace强化实现彩色化填充。
 
 # 使用方法
@@ -22,7 +22,7 @@
   |marked_data_dir|默认设置为读取标记图像文件夹路径|
   |is_file|默认为False|
   |exp_dir|默认为./data/exp|
-  |is_reshape|是否需要规格化图像大小|
+  |is_reshape|是否需要规格化图像大小，默认为False|
   |is_store|是否需要存储在exp_dir之中，默认为False|
 
 # 备注
