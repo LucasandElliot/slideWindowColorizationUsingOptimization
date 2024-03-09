@@ -1,34 +1,34 @@
-# 介绍
+# Introduction
 
-- 主要是运用以下两篇论文《slide window flitering》和《colorization using optimization》，对于上述代码，实现运用的是Python方法以及使用Laplace算子进行优化，实验对比结果确实有一定提升效果。所以最后采取的是Laplace算子优化。
-- colorzationOptimization.py为复现colorization using optimization的原论文，主要是借助上述论文的理论，在YUV空间求解线性方程组
-- slideWindowColorization.py为复现侧窗滤波+Laplace强化实现彩色化填充。
+- The main use of the following two papers "**slide window flitering**" and "**colorization using optimization**", for the above code, the implementation of the use of **Python** methods as well as the use of **Laplace operator optimization**(strengthen the edge and reduce the effect of the coloring bleeding), the experimental comparison results do have a certain effect of enhancement. So finally, the Laplace operator optimization is adopted.
+- **colorzationOptimization.py** is a reproduction of the original paper on colorization using optimization, which is mainly to solve the system of linear equations in YUV space with the help of the theory of the above paper.
+- **slideWindowColorization.py** is a reproduction of side window filtering + Laplace enhancement to achieve colorization filling.
 
-# 使用方法
+# Usage
 
 - ```
-  python slideWindowColorization.py --padding 2 --gary_photo_file ./data/original/example1.png --marked_photo_file  ./data/marked/example1_marked.png --is_file # 这里是选择单张图像处理
-  python slideWindowColorization.py --padding 2 --gray_data_dir ./data/original --marked_data_dir ./data/marked # 这里是选择图像文件夹
+  python slideWindowColorization.py --padding 2 --gary_photo_file ./data/original/example1.png --marked_photo_file  ./data/marked/example1_marked.png --is_file # choose the single photo to colorizate
+  python slideWindowColorization.py --padding 2 --gray_data_dir ./data/original --marked_data_dir ./data/marked # choose all files of folder to colorizate
   ```
 
-## 参数说明
+## Parameter introduction
 
-- | 参数                                | 内容 |
-  | ----------------------------------- | ---- |
-  |padding| 侧窗窗口半径大小，默认为2                 |
-  |gary_photo_file|当设置--is_file的时候需要设置灰度图像名称|
-  |marked_photo_file|当设置--is_file的时候需要设置标记图像名称|
-  |gray_data_dir|默认设置为读取灰度图像文件夹路径|
-  |marked_data_dir|默认设置为读取标记图像文件夹路径|
-  |is_file|默认为False|
-  |exp_dir|默认为./data/exp|
-  |is_reshape|是否需要规格化图像大小，默认为False|
-  |is_store|是否需要存储在exp_dir之中，默认为False|
+- | paramter          | content                                                      |
+  | ----------------- | ------------------------------------------------------------ |
+  | padding           | Side window window radius size, default is 2                 |
+  | gary_photo_file   | When setting --is_file you need to set the gray scale image name |
+  | marked_photo_file | Marked image name is required when setting --is_file         |
+  | gray_data_dir     | Default setting is to read gray image folder path            |
+  | marked_data_dir   | Default setting is to read marked image folder path          |
+  | is_file           | False by default                                             |
+  | exp_dir           | Defaults to . /data/exp                                      |
+  | is_reshape        | Defaults to False                                            |
+  | is_store          | when --is_store is in parameters list, the data should be stored in exp_dir, and its default setting is  false |
 
-# 备注
+# Note
 
-- 在进行RGB转YUV空间的时候发现，将RGB规格化的时候，RGB数值除以255效果会比增强后的RGB的最大值【np.max(src)】效果好。
-- 具体论文链接以及参考文献如下所示。
+- When doing RGB to YUV space, it was found that dividing the RGB value by 255 works better than the maximum value of the enhanced RGB  when normalizing RGB.
+- Links to specific papers as well as references are shown below.
   - [Side Window Filtering](https://openaccess.thecvf.com/content_CVPR_2019/papers/Yin_Side_Window_Filtering_CVPR_2019_paper.pdf)
   - [Colorization Using Optimization](https://homepages.inf.ed.ac.uk/ksubr/Files/Papers/p689-levin.pdf)
   - [在侧窗滤波的框架下实现图像彩色化（超详细！！！附可执行代码）](https://blog.csdn.net/qq_52300384/article/details/128322428)
